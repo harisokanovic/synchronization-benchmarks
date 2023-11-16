@@ -47,10 +47,11 @@
 
 #include ATOMIC_TEST
 
-uint64_t test_lock = 0;
-uint64_t sync_lock = 0;
-uint64_t calibrate_lock = 0;
-uint64_t ready_lock = 0;
+uint64_t test_lock_xxx __attribute__ ((aligned (256))) = 0;
+uint64_t test_lock __attribute__ ((aligned (256))) = 0;
+uint64_t sync_lock __attribute__ ((aligned (256))) = 0;
+uint64_t calibrate_lock __attribute__ ((aligned (256))) = 0;
+uint64_t ready_lock __attribute__ ((aligned (256))) = 0;
 
 void* hmr(void *);
 
