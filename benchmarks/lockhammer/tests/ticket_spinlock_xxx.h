@@ -17,7 +17,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
   uint32_t* const pnext = (uint32_t*)(&test_lock);
   uint32_t* const powner = (uint32_t*)(&test_lock_xxx);
 
-  const uint32_t my_ticket = __atomic_fetch_add(pnext, (uint32_t)1, __ATOMIC_SEQ_CST);
+  const uint32_t my_ticket = __atomic_fetch_add(pnext, (uint32_t)1, __ATOMIC_ACQ_REL);
 
   uint32_t now_serving = my_ticket;
   do {
@@ -25,7 +25,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
     //  spin_pause();
     //}
 
-    now_serving = __atomic_load_n(powner, __ATOMIC_SEQ_CST);
+    now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
   } while(now_serving != my_ticket);
 
   return 0;
@@ -35,7 +35,7 @@ static inline void lock_release (uint64_t *lock, unsigned long threadnum) {
   uint32_t* const pnext = (uint32_t*)(&test_lock);
   uint32_t* const powner = (uint32_t*)(&test_lock_xxx);
 
-  __atomic_fetch_add(powner, (uint32_t)1, __ATOMIC_SEQ_CST);
+  __atomic_fetch_add(powner, (uint32_t)1, __ATOMIC_ACQ_REL);
 }
 
 
