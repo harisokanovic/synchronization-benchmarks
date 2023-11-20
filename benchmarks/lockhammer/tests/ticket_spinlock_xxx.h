@@ -25,7 +25,8 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   uint32_t now_serving = my_ticket;
   do {
-    while (now_serving++ != my_ticket) {
+    uint32_t relax_count = (my_ticket - now_serving) * 1000;
+    while (relax_count--) {
       cpu_relax();
     }
 
