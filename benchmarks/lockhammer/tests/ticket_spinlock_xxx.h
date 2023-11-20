@@ -25,7 +25,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   const uint32_t my_ticket = __atomic_fetch_add(pnext, (uint32_t)1, __ATOMIC_RELAXED);
 
-  for (;;)
+  for(;;) {
     const uint32_t now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
     if (now_serving == my_ticket) {
       break;
