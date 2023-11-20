@@ -25,7 +25,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   uint32_t now_serving = my_ticket;
   do {
-    uint32_t relax_count = (my_ticket - now_serving) << 9; // current_depth x 512
+    uint32_t relax_count = (my_ticket - now_serving) * 1000;
     while (relax_count--) {
       cpu_relax();
     }
