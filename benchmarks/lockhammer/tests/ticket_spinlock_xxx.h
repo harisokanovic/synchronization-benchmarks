@@ -3,6 +3,8 @@
 //uint64_t test_lock_xxx;
 //uint64_t test_lock;
 
+#define RELAX_IS_ISB 1
+
 // Based on arch/arm/include/asm/atomic.h from Linux
 // Copied from Lockhammer lk_atomic.h
 static inline void cpu_relax (void) {
@@ -25,7 +27,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   uint32_t now_serving = my_ticket;
   do {
-    uint32_t relax_count = (my_ticket - now_serving) * 1000;
+    uint32_t relax_count = (my_ticket - now_serving) * 10;
     while (relax_count--) {
       cpu_relax();
     }
