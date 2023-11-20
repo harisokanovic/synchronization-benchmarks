@@ -3,14 +3,18 @@
 //uint64_t test_lock_xxx;
 //uint64_t test_lock;
 
-static inline void spin_pause() {
-  #if defined(__x86_64__)
-    asm volatile("pause;");
-  #elif defined(__aarch64__)
-    asm volatile("yield;");
-  #else
-    #error Unsupported
-  #endif
+// Based on arch/arm/include/asm/atomic.h from Linux
+// Copied from Lockhammer lk_atomic.h
+static inline void cpu_relax (void) {
+#if defined(__x86_64__)
+	asm volatile ("pause" : : : "memory" );
+#elif defined (__aarch64__) && defined(RELAX_IS_ISB)
+	asm volatile ("isb" : : : "memory" );
+#elif defined (__aarch64__)
+	asm volatile ("yield" : : : "memory" );
+#else
+#error Unsupported
+#endif
 }
 
 static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnum) {
@@ -21,9 +25,9 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   uint32_t now_serving = my_ticket;
   do {
-    //while (now_serving++ != my_ticket) {
-    //  spin_pause();
-    //}
+    while (now_serving++ != my_ticket) {
+      cpu_relax();
+    }
 
     now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
   } while(now_serving != my_ticket);
