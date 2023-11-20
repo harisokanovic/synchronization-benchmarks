@@ -25,15 +25,17 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
 
   const uint32_t my_ticket = __atomic_fetch_add(pnext, (uint32_t)1, __ATOMIC_RELAXED);
 
-  uint32_t now_serving = my_ticket;
-  do {
+  for (;;)
+    const uint32_t now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
+    if (now_serving == my_ticket) {
+      break;
+    }
+
     uint32_t relax_count = (my_ticket - now_serving) * 10;
     while (relax_count--) {
       cpu_relax();
     }
-
-    now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
-  } while(now_serving != my_ticket);
+  }
 
   return 0;
 }
