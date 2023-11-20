@@ -1,7 +1,6 @@
 // XXX
 
-//uint64_t test_lock_xxx;
-//uint64_t test_lock;
+uint32_t xxx_relax_count;
 
 #define RELAX_IS_ISB 1
 
@@ -31,7 +30,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
       break;
     }
 
-    uint32_t relax_count = (my_ticket - now_serving) * 10;
+    uint32_t relax_count = (my_ticket - now_serving) * xxx_relax_count;
     while (relax_count--) {
       cpu_relax();
     }

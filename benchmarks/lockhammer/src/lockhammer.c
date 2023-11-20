@@ -53,6 +53,8 @@ uint64_t sync_lock __attribute__ ((aligned (256))) = 0;
 uint64_t calibrate_lock __attribute__ ((aligned (256))) = 0;
 uint64_t ready_lock __attribute__ ((aligned (256))) = 0;
 
+uint32_t xxx_relax_count = 0;
+
 void* hmr(void *);
 
 void print_usage (char *invoc) {
@@ -94,7 +96,7 @@ int main(int argc, char** argv)
 
     opterr = 0;
 
-    while ((opt = getopt(argc, argv, "t:a:c:p:i:o:s")) != -1)
+    while ((opt = getopt(argc, argv, "t:a:c:p:i:o:r:s")) != -1)
     {
         long optval = 0;
         int len = 0;
@@ -193,6 +195,14 @@ int main(int argc, char** argv)
                 }
                 csv = strtok(NULL, ",:");
             }
+            break;
+          case 'r':
+            optval = strtol(optarg, (char **) NULL, 10);
+            if (optval < 0) {
+                fprintf(stderr, "ERROR: invalid relax count.\n");
+                return 1;
+            }
+            xxx_relax_count = optval;
             break;
           case 's':
             args.safemode = 1;
