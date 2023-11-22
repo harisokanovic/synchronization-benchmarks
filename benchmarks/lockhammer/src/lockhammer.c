@@ -53,6 +53,8 @@ uint64_t sync_lock __attribute__ ((aligned (256))) = 0;
 uint64_t calibrate_lock __attribute__ ((aligned (256))) = 0;
 uint64_t ready_lock __attribute__ ((aligned (256))) = 0;
 
+pthread_mutex_t pt_mutex_xxx = PTHREAD_MUTEX_INITIALIZER;
+
 uint32_t xxx_relax_count = 0;
 
 void* hmr(void *);

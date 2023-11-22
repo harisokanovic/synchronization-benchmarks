@@ -31,6 +31,9 @@
 
 #include <pthread.h>
 
+pthread_mutex_t pt_mutex_xxx;
+
+/*
 #ifdef initialize_lock
 #undef initialize_lock
 #endif
@@ -48,20 +51,17 @@ static inline void initialize_lock(uint64_t *lock, unsigned long num_cores) {
     exit(1);
   }
 }
+*/
 
 static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnum) {
-  pthread_mutex_t* const ptmut = (pthread_mutex_t*)lock;
-
-  if (pthread_mutex_lock(ptmut) != 0) {
+  if (pthread_mutex_lock(&pt_mutex_xxx) != 0) {
     fprintf(stderr, "pthread_mutex_lock() failed\n");
     exit(1);
   }
 }
 
 static inline void lock_release (uint64_t *lock, unsigned long threadnum) {
-  pthread_mutex_t* const ptmut = (pthread_mutex_t*)lock;
-
-  if (pthread_mutex_unlock(ptmut) != 0) {
+  if (pthread_mutex_unlock(&pt_mutex_xxx) != 0) {
     fprintf(stderr, "pthread_mutex_unlock() failed\n");
     exit(1);
   }
