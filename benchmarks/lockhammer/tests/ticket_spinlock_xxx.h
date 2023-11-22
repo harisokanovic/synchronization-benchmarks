@@ -23,6 +23,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
   uint32_t* const powner = &pnext[1];
 
   const uint32_t my_ticket = __atomic_fetch_add(pnext, (uint32_t)1, __ATOMIC_RELAXED);
+  const uint32_t lock_depth = my_ticket - __atomic_load_n(powner, __ATOMIC_ACQUIRE);
 
   for(;;) {
     const uint32_t now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
@@ -30,13 +31,13 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
       break;
     }
 
-    uint32_t relax_count = (my_ticket - now_serving) * xxx_relax_count;
+    uint32_t relax_count = lock_depth * xxx_relax_count;
     while (relax_count--) {
       cpu_relax();
     }
   }
 
-  return 0;
+  return lock_depth;
 }
 
 static inline void lock_release (uint64_t *lock, unsigned long threadnum) {
