@@ -26,8 +26,8 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
   uint32_t my_ticket;
   do {
     my_ticket = __atomic_load_n(pnext, __ATOMIC_ACQUIRE);
-    // weak = true means it may fail spuriously
-  } while (__atomic_compare_exchange_n(pnext, my_ticket, (my_ticket + 1), true, __ATOMIC_RELEASE, __ATOMIC_RELEASE) != 1);
+    // weak = true means CAS may fail spuriously
+  } while (__atomic_compare_exchange_n(pnext, &my_ticket, (my_ticket + 1), true, __ATOMIC_RELEASE, __ATOMIC_ACQUIRE) != 1);
 
   for(;;) {
     const uint32_t now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
@@ -50,8 +50,9 @@ static inline void lock_release (uint64_t *lock, unsigned long threadnum) {
   uint32_t* const powner = &pnext[1];
 
   // __atomic_fetch_add(powner, (uint32_t)1, __ATOMIC_RELEASE);
+  uint32_t now_serving;
   do {
-    const uint32_t now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
-    // weak = true means it may fail spuriously
-  } while (__atomic_compare_exchange_n(powner, now_serving, (now_serving + 1), true, __ATOMIC_RELEASE, __ATOMIC_RELEASE) != 1);
+    now_serving = __atomic_load_n(powner, __ATOMIC_ACQUIRE);
+    // weak = true means CAS may fail spuriously
+  } while (__atomic_compare_exchange_n(powner, &now_serving, (now_serving + 1), true, __ATOMIC_RELEASE, __ATOMIC_ACQUIRE) != 1);
 }
