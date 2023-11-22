@@ -40,6 +40,7 @@ TEST_TARGETS=lh_swap_mutex \
 	lh_osq_lock \
 	lh_clh_spinlock \
 	lh_ticket_spinlock_xxx \
+	lh_ticket_spinlock_cas_xxx \
 	lh_pthread_spin_lock \
 
 ifeq ($(TARGET_ARCH),aarch64)
