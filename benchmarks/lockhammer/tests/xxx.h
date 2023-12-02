@@ -37,7 +37,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
   if (threadnum == 0) {
     asm volatile (
     "ldr %w[tmp1], %[lock] \n"
-    "add %w[tmp1], #1 \n"
+    "add %w[tmp1], %w[tmp1], #1 \n"
     "str %w[tmp1], %[lock] \n"
     : [lock] "+Q" (*lock),
       [tmp1] "=&r" (tmp1)
@@ -46,7 +46,7 @@ static inline unsigned long lock_acquire (uint64_t *lock, unsigned long threadnu
   } else {
     asm volatile (
     "ldr %w[tmp1], %[lock] \n"
-    "add %w[tmp1], #1 \n"
+    "add %w[tmp1], %w[tmp1], #1 \n"
     : [lock] "+Q" (*lock),
       [tmp1] "=&r" (tmp1)
     :
