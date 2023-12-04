@@ -218,6 +218,8 @@ int main(int argc, char** argv)
 
     parse_test_args(args, argc, argv);
 
+    fprintf(stderr, "XXX &test_lock = %p\n", &test_lock);
+
     double tickspns;
     pthread_t hmr_threads[args.nthrds];
     pthread_attr_t hmr_attr;
